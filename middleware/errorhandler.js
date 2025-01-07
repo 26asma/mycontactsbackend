@@ -1,22 +1,30 @@
-const mongoose= require("mongoose");
-const userSchema= mongoose.Schema({
-    username:{
-        type:String,
-        required:[true,"please add username"],
-    },
-    email:{
-        type: String,
-        required:[true,"please add user email"],
-        unique:[true,"email address is already register"],
-    },
-    password: {
-        type:String,
-        required:[true,"please add user password"],
+const {constants}= require("../constants")
+const errorhandler=(err,req,res,next)=>{
+const statusCode=res.statusCode?res.statusCode:500;
+switch(statusCode){
+  case constants.VALIDATION_ERROR:res.json({
+    title: "validation error",message:err.message, stacktrace:err.stack 
+})
 
-    },
-},
-{
-  timestamps:true,
+break;
+case constants.FORBIDDEN: res.json({
+    title: "forbidden",message:err.message, stacktrace:err.stack
+}) 
+break;
+case constants.UNAUTHORIZED: res.json({
+    title: "unauthorized",message:err.message, stacktrace:err.stack
+}) 
+break;
+case constants.NOT_Found: res.json({
+    title: "not found",message:err.message, stacktrace:err.stack
+}) 
+break;
+case constants.SERVER_ERROR: res.json({
+    title: "SERVER ERROR",message:err.message, stacktrace:err.stack
+})  
+break;
+default:console.log("no error")
+break;
+};
 }
-);
-module.exports=mongoose.model("User",userSchema);
+module.exports=errorhandler; 
